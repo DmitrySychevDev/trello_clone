@@ -5,15 +5,6 @@ interface Props {
   event: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
 }
 
-const UiButton = styled.button`
-  border: none;
-  background-color: #ffffff;
-  z-index: 20;
-  img {
-    width: 20px;
-    height: 20px;
-  }
-`;
 function Button({ image, event }: Props) {
   return (
     <UiButton onClick={event}>
@@ -21,4 +12,14 @@ function Button({ image, event }: Props) {
     </UiButton>
   );
 }
+const UiButton = styled.button`
+  border: none;
+  background-color: #ffffff;
+  z-index: 20;
+  cursor: pointer;
+  img {
+    width: 20px;
+    height: 20px;
+  }
+`;
 export default Button;

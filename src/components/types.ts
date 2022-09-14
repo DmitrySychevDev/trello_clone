@@ -7,7 +7,11 @@ interface CardInfo {
   commentsNum: number;
 }
 interface CommentsInfo {
-  author: string;
+  author: string | undefined;
   content: string;
 }
-export { type CardInfo, type CommentsInfo };
+interface ColumnData {
+  columnName: string;
+  cards: CardInfo[];
+}
+export { type CardInfo, type CommentsInfo, type ColumnData };

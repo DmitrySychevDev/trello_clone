@@ -1,5 +1,5 @@
 import styled from "styled-components";
-const PopupContaner = styled.div`
+const PopupOverlay = styled.div`
   width: 100%;
   height: 100%;
   position: fixed;
@@ -8,5 +8,6 @@ const PopupContaner = styled.div`
   background-color: rgba(17, 17, 17, 0.5);
   opacity: 1;
   transition: all 0.5s ease-in-out;
+  z-index: 1;
 `;
-export default PopupContaner;
+export default PopupOverlay;

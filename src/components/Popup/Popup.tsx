@@ -1,22 +1,41 @@
 import styled from "styled-components";
-import { PopupContaner } from "../../UI";
+import React, { useState } from "react";
+import { PopupOverlay } from "../ui";
 interface PopupProps {
-  callback: Function;
+  setUser: Function;
+  close: Function;
 }
-const acceptName = (setName: Function) => {
-  return function (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
-    e.preventDefault();
-    const name: string = (document.getElementById("name") as HTMLInputElement)
-      .value;
-    setName(name);
-    const popupBlock: any = document.querySelector(".popup-contener");
-    popupBlock.style.opacity = 0;
-    setTimeout(() => {
-      popupBlock.remove();
-    }, 500);
-  };
-};
 
+function Popup({ setUser, close }: PopupProps) {
+  const closeEvent = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    close();
+  };
+  const onModalClick = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    e.stopPropagation();
+  };
+  const acceptName = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    close();
+    setUser(value);
+  };
+  const [value, setValue] = useState<string>("");
+  return (
+    <PopupOverlay onClick={closeEvent}>
+      <PopupWraper onClick={onModalClick}>
+        <FormPopup>
+          <Label>Enter Your name</Label>
+          <Input
+            type="text"
+            value={value}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+              setValue(e.target.value);
+            }}
+          />
+          <AcceptNameBtn onClick={acceptName}>Enter</AcceptNameBtn>
+        </FormPopup>
+      </PopupWraper>
+    </PopupOverlay>
+  );
+}
 const PopupWraper = styled.div`
   position: absolute;
   top: 25%;
@@ -26,11 +45,9 @@ const PopupWraper = styled.div`
   background-color: #ffffff;
   border-radius: 26px;
   padding-top: 89px;
+  z-index: 5;
 `;
-const Input = styled.input.attrs({
-  type: "text",
-  id: "name",
-})`
+const Input = styled.input`
   width: 201px;
   height: 36px;
   padding-left: 10px;
@@ -56,17 +73,4 @@ const FormPopup = styled.form`
   align-items: center;
   gap: 22px;
 `;
-function Popup({ callback }: PopupProps) {
-  return (
-    <PopupContaner className="popup-contener">
-      <PopupWraper>
-        <FormPopup>
-          <Label>Enter Your name</Label>
-          <Input />
-          <AcceptNameBtn onClick={acceptName(callback)}>Enter</AcceptNameBtn>
-        </FormPopup>
-      </PopupWraper>
-    </PopupContaner>
-  );
-}
 export default Popup;
