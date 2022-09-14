@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import uniqid from "uniqid";
 import done from "../../images/done.png";
 import { Card } from "../";
 import styled from "styled-components";
@@ -46,10 +47,10 @@ function Column({
     };
     change(column);
   }, [cards]);
-  const dropCard = (index: number) => {
+  const dropCard = (id: string) => {
     return () => {
-      const arr: CardInfo[] = [...cards];
-      arr.splice(index, 1);
+      let arr: CardInfo[] = [...cards];
+      arr = [...arr.filter((card) => card.id != id)];
       const column: ColumnData = {
         columnName: titleState,
         cards: [...cards],
@@ -63,6 +64,7 @@ function Column({
   const acceptCard = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     if (value !== "") {
       const card: CardInfo = {
+        id: uniqid(),
         title: value,
         author: undefined,
         column: titleState,
@@ -120,14 +122,15 @@ function Column({
       <WrapeCards>
         {cards.map((item, index) => (
           <Card
-            key={index}
+            id={item.id}
+            key={item.id}
             author={item.author}
             title={item.title}
             column={item.column}
             comments={item.comments}
             description={item.description}
             commentsNum={item.commentsNum}
-            dropCard={dropCard(index)}
+            dropCard={dropCard(item.id)}
             fixCardChage={changeCards(index)}
             curentUser={curentUser}
           />

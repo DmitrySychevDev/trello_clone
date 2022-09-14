@@ -17,6 +17,7 @@ interface CardPopupProps extends CardInfo {
 }
 function CardPopup(props: CardPopupProps) {
   const card: CardInfo = {
+    id: props.id,
     title: props.title,
     author: props.author,
     column: props.column,

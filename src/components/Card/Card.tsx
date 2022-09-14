@@ -19,6 +19,7 @@ function Card(props: CardProps) {
   const [cardTitleIsEdit, setCardTitleIsEdit] = useState<boolean>(false);
   const [cardTitleState, setCardTitleState] = useState<string>(props.title);
   const [cardInfo, setCardInfo] = useState<CardInfo>({
+    id: props.id,
     title: props.title,
     author: props.author,
     column: props.column,
@@ -84,6 +85,7 @@ function Card(props: CardProps) {
         )}
         {popupVisible && (
           <CardPopup
+            id={cardInfo.id}
             title={cardInfo.title}
             author={cardInfo.author}
             column={cardInfo.column}

@@ -1,4 +1,5 @@
 interface CardInfo {
+  id:string;
   title: string;
   author: string | undefined;
   column: string;
