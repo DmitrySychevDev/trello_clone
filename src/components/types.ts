@@ -1,6 +1,6 @@
 interface CardInfo {
   title: string;
-  author: string;
+  author: string | undefined;
   column: string;
   comments: CommentsInfo[];
   description: string;

@@ -57,7 +57,7 @@ function CardPopup(props: CardPopupProps) {
   const addComment = () => {
     if (commentContent !== "") {
       const comment: CommentsInfo = {
-        author: props.author,
+        author: undefined,
         content: commentContent,
       };
 
@@ -85,15 +85,16 @@ function CardPopup(props: CardPopupProps) {
       setStateComments([...arr]);
     };
 
-  const editComment = (index: number) => (newContent: string) => {
-    const arr: CommentsInfo[] = [...stateComments];
-    arr[index] = { author: arr[index].author, content: newContent };
-    setStateComments([...arr]);
-    props.changeCardInfo({
-      ...card,
-      comments: [...arr],
-    });
-  };
+  const editComment =
+    (index: number) => (newContent: string, newAuthor: string) => {
+      const arr: CommentsInfo[] = [...stateComments];
+      arr[index] = { author: newAuthor, content: newContent };
+      setStateComments([...arr]);
+      props.changeCardInfo({
+        ...card,
+        comments: [...arr],
+      });
+    };
   const closeOutside = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     props.close();
   };
@@ -135,6 +136,9 @@ function CardPopup(props: CardPopupProps) {
             />
           </TitleBlock>
         )}
+        <Author>
+          Автор:<strong>{props.author}</strong>
+        </Author>
         <ColumnInfo>
           Колонка:<strong>{props.column}</strong>
         </ColumnInfo>
@@ -270,5 +274,13 @@ const CommentsBlock = styled.div`
   padding-bottom: 10px;
   margin-bottom: 20px;
   overflow-y: scroll;
+`;
+const Author = styled.p`
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 19px;
+  padding-top: 20px;
 `;
 export default CardPopup;

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import done from "../../../../images/done.png";
 import { CommentsInfo } from "../../../types";
@@ -21,6 +21,9 @@ function Comment({
 }: CommentProps) {
   const [value, setValue] = useState<string>(content);
   const [commentEdit, setCommentEdit] = useState<boolean>(false);
+  useEffect(() => {
+    if (!author) editComment(content, curentUser);
+  }, [curentUser]);
   const edit = () => {
     if (value !== "") {
       editComment(value);
@@ -34,7 +37,7 @@ function Comment({
     <div>
       <CommentWraper>
         <div>
-          <h4>{curentUser}</h4>
+          <h4>{author}</h4>
           {!commentEdit && (
             <p className={`comment-content_${index}`}>{content}</p>
           )}

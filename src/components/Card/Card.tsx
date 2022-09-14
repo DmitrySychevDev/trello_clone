@@ -31,7 +31,7 @@ function Card(props: CardProps) {
   }, [props.column]);
 
   useEffect(() => {
-    setCardInfo({ ...cardInfo });
+    if (!props.author) setCardInfo({ ...cardInfo, author: props.curentUser });
   }, [props.curentUser]);
 
   useEffect(() => {

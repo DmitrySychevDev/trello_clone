@@ -64,7 +64,7 @@ function Column({
     if (value !== "") {
       const card: CardInfo = {
         title: value,
-        author: authorProp,
+        author: undefined,
         column: titleState,
         comments: [],
         description: "",
