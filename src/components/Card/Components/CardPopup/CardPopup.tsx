@@ -6,7 +6,9 @@ import done from "../../../../images/done.png";
 import pencil from "../../../../images/draw.png";
 import send from "../../../../images/send.png";
 import closeImg from "../../../../images/close.png";
+import uniqid from "uniqid";
 import { CardInfo, CommentsInfo } from "../../../types";
+import singleton from "../../../../LocalStorageService";
 import { Comment } from "../";
 
 interface CardPopupProps extends CardInfo {
@@ -14,6 +16,7 @@ interface CardPopupProps extends CardInfo {
   changeCardInfo: Function;
   close: Function;
   dropCard: () => void;
+  commentsArr: CommentsInfo[];
 }
 function CardPopup(props: CardPopupProps) {
   const card: CardInfo = {
@@ -25,16 +28,23 @@ function CardPopup(props: CardPopupProps) {
     description: props.description,
     commentsNum: props.commentsNum,
   };
+
   const [stateDescription, setStateDescription] = useState<string>(
     props.description
   );
   const [stateComments, setStateComments] = useState<CommentsInfo[]>(
-    props.comments
+    props.commentsArr.filter(
+      (comment) => props.comments.indexOf(comment.id) !== -1
+    )
   );
   const [commentContent, setCommentContent] = useState<string>("");
   const [stateTitle, setStateTitle] = useState<string>(props.title);
   const [titleEdit, setTitleEdit] = useState<boolean>(false);
   const [descriptionEdit, setDescriptionEdit] = useState<boolean>(false);
+
+  useEffect(() => {
+    singleton.setComments([...stateComments], false);
+  }, [stateComments]);
 
   const acceptChangesTitle = (
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>
@@ -58,43 +68,48 @@ function CardPopup(props: CardPopupProps) {
   const addComment = () => {
     if (commentContent !== "") {
       const comment: CommentsInfo = {
+        id: uniqid(),
         author: undefined,
         content: commentContent,
       };
 
       props.changeCardInfo({
         ...card,
-        comments: [...stateComments, comment],
+        comments: [...stateComments.map((comm) => comm.id), comment.id],
         commentsNum: card.commentsNum + 1,
       });
       setStateComments([...stateComments, comment]);
-      console.log(stateComments);
       setCommentContent("");
     }
   };
 
   const deleteComments =
-    (index: number) => (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-      const arr: CommentsInfo[] = [...stateComments];
-      arr.splice(index, 1);
-
+    (id: string) => (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+      const arr = [...stateComments];
       props.changeCardInfo({
         ...card,
-        comments: [...arr],
+        comments: [
+          ...arr.filter((comment) => comment.id !== id).map((comm) => comm.id),
+        ],
         commentsNum: card.commentsNum - 1,
       });
-      setStateComments([...arr]);
+      setStateComments([...arr.filter((comm) => comm.id !== id)]);
+      singleton.setComments(
+        arr.filter((comment) => comment.id === id),
+        true
+      );
     };
 
   const editComment =
     (index: number) => (newContent: string, newAuthor: string) => {
       const arr: CommentsInfo[] = [...stateComments];
-      arr[index] = { author: newAuthor, content: newContent };
+      arr[index] = {
+        id: arr[index].id,
+        author: newAuthor,
+        content: newContent,
+      };
       setStateComments([...arr]);
-      props.changeCardInfo({
-        ...card,
-        comments: [...arr],
-      });
+      singleton.setComments([...arr], false);
     };
   const closeOutside = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     props.close();
@@ -174,11 +189,12 @@ function CardPopup(props: CardPopupProps) {
         <CommentsBlock>
           {stateComments.map((item, index) => (
             <Comment
+              id={item.id}
               author={item.author}
               content={item.content}
               curentUser={props.curentUser}
               editComment={editComment(index)}
-              deleteComment={deleteComments(index)}
+              deleteComment={deleteComments(item.id)}
               index={index}
             />
           ))}

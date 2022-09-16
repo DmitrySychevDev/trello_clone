@@ -24,9 +24,10 @@ function Comment({
   useEffect(() => {
     if (!author) editComment(content, curentUser);
   }, [curentUser]);
+
   const edit = () => {
     if (value !== "") {
-      editComment(value);
+      editComment(value, author);
     }
     setCommentEdit((commentEdit) => !commentEdit);
   };

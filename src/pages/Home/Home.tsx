@@ -1,8 +1,9 @@
 import styled from "styled-components";
 import React, { useState, useEffect } from "react";
 import { Column, Popup } from "../../components";
-import { CardInfo, ColumnData } from "../../components/types";
+import { CardInfo, ColumnData, CommentsInfo } from "../../components/types";
 import { useLocalStorage } from "../../hooks";
+import singleton from "../../LocalStorageService";
 
 function Home() {
   const [localData, setLocalData] = useLocalStorage<ColumnData[]>("data", [
@@ -12,21 +13,18 @@ function Home() {
     { columnName: "Done", cards: [] },
   ]);
   const [name, setName] = useState<string>("User");
+  const [comments, setComments] = useState<CommentsInfo[]>(
+    singleton.getComments()
+  ); //TODO добавить работу с localStorage
   const [popuIsOpen, setPopupIsOpen] = useState<boolean>(true);
-  const [columns, setColumns] = useState<ColumnData[]>(
-    localData
-      ? localData
-      : [
-          { columnName: "TODO", cards: [] },
-          { columnName: "In Progress", cards: [] },
-          { columnName: "Testing", cards: [] },
-          { columnName: "Done", cards: [] },
-        ]
-  );
-  console.log(name);
+  const [columns, setColumns] = useState<ColumnData[]>(singleton.getColumns());
+  const [cards, setCards] = useState<CardInfo[]>(singleton.getCards());
   useEffect(() => {
-    setLocalData(columns);
+    columns.forEach((col, index) => {
+      singleton.setColumn(col, index);
+    });
   }, [columns]);
+
   const editColumn = (index: number) => {
     return (data: ColumnData) => {
       const arr = [...columns];
@@ -38,6 +36,7 @@ function Home() {
   const closePopup = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     setPopupIsOpen((popuIsOpen) => !popuIsOpen);
   };
+
   return (
     <div className="App">
       {popuIsOpen && (
@@ -52,11 +51,13 @@ function Home() {
         {columns.map((val, index) => (
           <Column
             key={index}
-            authorProp={name}
+            index={index}
             title={val.columnName}
             curentUser={name}
             change={editColumn(index)}
             cardsArr={val.cards}
+            fullCardsArr={cards}
+            fullCommentsArr={comments}
           />
         ))}
       </Columns>

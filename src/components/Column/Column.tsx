@@ -3,25 +3,32 @@ import uniqid from "uniqid";
 import done from "../../images/done.png";
 import { Card } from "../";
 import styled from "styled-components";
+import singleton from "../../LocalStorageService";
 import { Button, InputBlock } from "../ui";
-import { CardInfo, ColumnData } from "../types";
+import { CardInfo, ColumnData, CommentsInfo } from "../types";
 
 interface ColumnProps {
   title: string;
   curentUser: string;
-  authorProp: string;
   change: Function;
-  cardsArr: CardInfo[];
+  cardsArr: string[];
+  fullCardsArr: CardInfo[];
+  fullCommentsArr: CommentsInfo[];
+  index: number;
 }
 
 function Column({
   title,
   curentUser,
-  authorProp,
+  index,
   change,
   cardsArr,
+  fullCardsArr,
+  fullCommentsArr,
 }: ColumnProps) {
-  const [cards, setCards] = useState<CardInfo[]>(cardsArr);
+  const [cards, setCards] = useState<CardInfo[]>(
+    fullCardsArr.filter((card) => cardsArr.indexOf(card.id) !== -1)
+  );
   const [value, setValue] = useState<string>("");
   const [titleState, setTitleState] = useState<string>(title);
   const [cardIsAdd, setCardIsAdd] = useState<boolean>(false);
@@ -34,30 +41,38 @@ function Column({
       return { ...element };
     });
     setCards([...cardArr]);
+    singleton.setCard(cardArr, false);
+
     const column: ColumnData = {
       columnName: titleState,
-      cards: [...cards],
+      cards: cards.map((card) => card.id),
     };
+    singleton.setColumn(column, index);
     change(column);
   }, [titleState]);
+
   useEffect(() => {
     const column: ColumnData = {
       columnName: titleState,
-      cards: [...cards],
+      cards: cards.map((card) => card.id),
     };
+    singleton.setCard(cards, false);
+    //fixChandesCards([...singleton.getCards()]);
+    singleton.setColumn(column, index);
     change(column);
   }, [cards]);
+
   const dropCard = (id: string) => {
     return () => {
       let arr: CardInfo[] = [...cards];
-      arr = [...arr.filter((card) => card.id != id)];
+      arr = [...arr.filter((card) => card.id !== id)];
       const column: ColumnData = {
         columnName: titleState,
-        cards: [...cards],
+        cards: cards.map((card) => card.id),
       };
-      change(column);
       setCards([...arr]);
       console.log(cards);
+      singleton.setCard([...cards.filter((card) => card.id === id)], true);
     };
   };
 
@@ -76,17 +91,11 @@ function Column({
       setCards([...cards, card]);
       const column: ColumnData = {
         columnName: titleState,
-        cards: [...cards],
+        cards: cards.map((card) => card.id),
       };
+      singleton.setCard([card], false);
       setCardIsAdd((cardIsAdd) => !cardIsAdd);
-      change(column);
     }
-  };
-
-  const changeCards = (index: number) => {
-    return (card: CardInfo) => {
-      setCards([...cards.slice(0, index), card, ...cards.slice(index + 1)]);
-    };
   };
 
   const editColumnTitle = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
@@ -131,8 +140,8 @@ function Column({
             description={item.description}
             commentsNum={item.commentsNum}
             dropCard={dropCard(item.id)}
-            fixCardChage={changeCards(index)}
             curentUser={curentUser}
+            fullCommentsArr={fullCommentsArr}
           />
         ))}
       </WrapeCards>

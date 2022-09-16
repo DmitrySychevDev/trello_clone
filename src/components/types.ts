@@ -1,18 +1,19 @@
 interface CardInfo {
-  id:string;
+  id: string;
   title: string;
   author: string | undefined;
   column: string;
-  comments: CommentsInfo[];
+  comments: string[];
   description: string;
   commentsNum: number;
 }
 interface CommentsInfo {
+  id: string;
   author: string | undefined;
   content: string;
 }
 interface ColumnData {
   columnName: string;
-  cards: CardInfo[];
+  cards: string[];
 }
 export { type CardInfo, type CommentsInfo, type ColumnData };

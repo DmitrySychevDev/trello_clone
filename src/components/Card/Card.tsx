@@ -7,17 +7,23 @@ import done from "../../images/done.png";
 import styled from "styled-components";
 import { CardInfo, CommentsInfo } from "../types";
 import { CardPopup } from "./Components";
+import singleton from "../../LocalStorageService";
 
 interface CardProps extends CardInfo {
   curentUser: string;
   dropCard: () => void;
-  fixCardChage: Function;
+  fullCommentsArr: CommentsInfo[];
 }
 
 function Card(props: CardProps) {
   const [popupVisible, setPopupVisible] = useState<boolean>(false);
   const [cardTitleIsEdit, setCardTitleIsEdit] = useState<boolean>(false);
   const [cardTitleState, setCardTitleState] = useState<string>(props.title);
+  const [commentsState, setCommentsState] = useState<CommentsInfo[]>(
+    props.fullCommentsArr.filter(
+      (comment) => props.comments.indexOf(comment.id) !== -1
+    )
+  );
   const [cardInfo, setCardInfo] = useState<CardInfo>({
     id: props.id,
     title: props.title,
@@ -35,11 +41,9 @@ function Card(props: CardProps) {
     if (!props.author) setCardInfo({ ...cardInfo, author: props.curentUser });
   }, [props.curentUser]);
 
-  useEffect(() => {
-    props.fixCardChage(cardInfo);
-  }, [cardInfo]);
   const chadgecard = (param: CardInfo) => {
     setCardInfo(param);
+    singleton.setCard([param], false);
   };
 
   function editCard(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
@@ -53,6 +57,7 @@ function Card(props: CardProps) {
   function acceptNewTitle(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
     setCardInfo({ ...cardInfo, title: cardTitleState });
     setCardTitleIsEdit((cardTitleIsEdit) => !cardTitleIsEdit);
+    singleton.setCard([{ ...cardInfo, title: cardTitleState }], false);
   }
   return (
     <CardConteaner>
@@ -93,6 +98,7 @@ function Card(props: CardProps) {
             description={cardInfo.description}
             commentsNum={cardInfo.commentsNum}
             curentUser={props.curentUser}
+            commentsArr={props.fullCommentsArr}
             changeCardInfo={chadgecard}
             close={closePopup}
             dropCard={props.dropCard}
