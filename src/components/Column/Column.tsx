@@ -4,7 +4,7 @@ import done from "../../images/done.png";
 import { Card } from "../";
 import styled from "styled-components";
 import singleton from "../../LocalStorageService";
-import { Button, InputBlock } from "../ui";
+import { Button, InputBlock, Input } from "../ui";
 import { CardInfo, ColumnData, CommentsInfo } from "../types";
 
 interface ColumnProps {
@@ -113,8 +113,7 @@ function Column({
     <WraperColumn>
       {columnIsEdit && (
         <InputBlock>
-          <input
-            type="text"
+          <Input
             value={value}
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
               setValue(e.target.value);

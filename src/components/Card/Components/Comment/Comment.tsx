@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import done from "../../../../images/done.png";
 import { CommentsInfo } from "../../../types";
-import { InputBlock, Button } from "../../../ui";
+import { InputBlock, Button, Input } from "../../../ui";
 
 interface CommentProps extends CommentsInfo {
   curentUser: string;
@@ -46,8 +46,7 @@ function Comment({
 
         {commentEdit && (
           <InputBlock>
-            <input
-              type="text"
+            <Input
               value={value}
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                 setValue(e.target.value);

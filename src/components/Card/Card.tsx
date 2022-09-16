@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import pencil from "../../images/draw.png";
 import description from "../../images/description.png";
 import comment from "../../images/comment.png";
-import { Button, InputBlock } from "../ui";
+import { Button, InputBlock, Input } from "../ui";
 import done from "../../images/done.png";
 import styled from "styled-components";
 import { CardInfo, CommentsInfo } from "../types";
@@ -64,8 +64,7 @@ function Card(props: CardProps) {
       <CardWraper>
         {cardTitleIsEdit && (
           <InputBlock>
-            <input
-              type="text"
+            <Input
               value={cardTitleState}
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                 setCardTitleState(e.target.value);

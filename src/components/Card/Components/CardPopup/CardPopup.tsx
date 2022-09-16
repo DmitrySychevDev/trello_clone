@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { PopupOverlay, Button, InputBlock } from "../../../ui";
+import { PopupOverlay, Button, InputBlock, Input } from "../../../ui";
 import styled from "styled-components";
 import description from "../../../../images/description.png";
 import done from "../../../../images/done.png";
@@ -131,8 +131,7 @@ function CardPopup(props: CardPopupProps) {
         </CloseBtn>
         {titleEdit && (
           <InputBlock>
-            <input
-              type="text"
+            <Input
               value={stateTitle}
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                 setStateTitle(e.target.value);
@@ -172,8 +171,7 @@ function CardPopup(props: CardPopupProps) {
         </DescriptionBlock>
         {descriptionEdit && (
           <InputBlock>
-            <input
-              type="text"
+            <Input
               value={stateDescription}
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                 setStateDescription(e.target.value);
@@ -199,8 +197,7 @@ function CardPopup(props: CardPopupProps) {
             />
           ))}
           <InputBlock>
-            <input
-              type="text"
+            <Input
               value={commentContent}
               placeholder="Написать комментарий"
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => {

@@ -15,7 +15,9 @@ function Popup({ setUser, close }: PopupProps) {
   };
   const acceptName = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     close();
-    setUser(value);
+    if (!!value) {
+      setUser(value);
+    }
   };
   const [value, setValue] = useState<string>("");
   return (
@@ -48,7 +50,7 @@ const PopupWraper = styled.div`
   z-index: 5;
 `;
 const Input = styled.input`
-  width: 201px;
+  width: 200px;
   height: 36px;
   padding-left: 10px;
   border-radius: 26px;

@@ -2,16 +2,9 @@ import styled from "styled-components";
 import React, { useState, useEffect } from "react";
 import { Column, Popup } from "../../components";
 import { CardInfo, ColumnData, CommentsInfo } from "../../components/types";
-import { useLocalStorage } from "../../hooks";
 import singleton from "../../LocalStorageService";
 
 function Home() {
-  const [localData, setLocalData] = useLocalStorage<ColumnData[]>("data", [
-    { columnName: "TODO", cards: [] },
-    { columnName: "In Progress", cards: [] },
-    { columnName: "Testing", cards: [] },
-    { columnName: "Done", cards: [] },
-  ]);
   const [name, setName] = useState<string>("User");
   const [comments, setComments] = useState<CommentsInfo[]>(
     singleton.getComments()
