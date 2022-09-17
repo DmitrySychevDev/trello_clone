@@ -2,7 +2,6 @@ interface CardInfo {
   id: string;
   title: string;
   author: string | undefined;
-  column: string;
   comments: string[];
   description: string;
   commentsNum: number;

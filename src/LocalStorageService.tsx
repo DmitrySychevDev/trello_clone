@@ -1,11 +1,15 @@
-import { triggerAsyncId } from "async_hooks";
 import { CommentsInfo, CardInfo, ColumnData } from "./components/types";
+enum StorageKeys {
+  Comments = "comments",
+  Columns = "columns",
+  Cards = "cards",
+}
 class LocalStorageService {
   comments: CommentsInfo[];
   cards: CardInfo[];
   columns: ColumnData[];
   constructor() {
-    const columnsLocal = localStorage.getItem("columns");
+    const columnsLocal = localStorage.getItem(StorageKeys.Columns);
     this.columns = columnsLocal
       ? JSON.parse(columnsLocal)
       : [
@@ -14,10 +18,9 @@ class LocalStorageService {
           { columnName: "Testing", cards: [] },
           { columnName: "Done", cards: [] },
         ];
-    const cardsLocal = localStorage.getItem("cards");
-
+    const cardsLocal = localStorage.getItem(StorageKeys.Cards);
     this.cards = cardsLocal ? JSON.parse(cardsLocal) : [];
-    const commentsLocal = localStorage.getItem("comments");
+    const commentsLocal = localStorage.getItem(StorageKeys.Comments);
     this.comments = commentsLocal ? JSON.parse(commentsLocal) : [];
   }
   getCards(): CardInfo[] {
@@ -29,45 +32,17 @@ class LocalStorageService {
   getColumns(): ColumnData[] {
     return this.columns;
   }
-  setComments(commentsParam: CommentsInfo[], isDelete: boolean) {
-    if (!isDelete) {
-      commentsParam.forEach((comment) => {
-        const index = this.comments
-          .map((commentEl) => commentEl.id)
-          .indexOf(comment.id);
-        if (index !== -1) {
-          this.comments[index] = comment;
-        } else {
-          this.comments.push(comment);
-        }
-      });
-    } else
-      this.comments = this.comments.filter(
-        (comment) => comment.id !== commentsParam[0].id
-      );
-    localStorage.setItem("comments", JSON.stringify(this.comments));
+  setComments(commentsParam: CommentsInfo[]) {
+    localStorage.setItem(StorageKeys.Comments, JSON.stringify(commentsParam));
   }
 
-  setCard(cardsParam: CardInfo[], isDelete: boolean) {
-    if (!isDelete) {
-      cardsParam.forEach((card) => {
-        const index = this.cards.map((cardEl) => cardEl.id).indexOf(card.id);
-        if (index !== -1) {
-          console.log(card);
-          this.cards[index] = card;
-        } else {
-          this.cards.push(card);
-        }
-      });
-    } else
-      this.cards = this.cards.filter((card) => card.id !== cardsParam[0].id);
-    localStorage.setItem("cards", JSON.stringify(this.cards));
+  setCard(cardsParam: CardInfo[]) {
+    localStorage.setItem(StorageKeys.Cards, JSON.stringify(cardsParam));
   }
 
-  setColumn(column: ColumnData, index: number) {
-    this.columns[index] = column;
-    localStorage.setItem("columns", JSON.stringify(this.columns));
+  setColumn(columnsParam: ColumnData[]) {
+    localStorage.setItem(StorageKeys.Columns, JSON.stringify(columnsParam));
   }
 }
-const singleton = new LocalStorageService();
-export default singleton;
+const localStorageService = new LocalStorageService();
+export default localStorageService;

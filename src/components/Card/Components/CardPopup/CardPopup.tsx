@@ -8,7 +8,6 @@ import send from "../../../../images/send.png";
 import closeImg from "../../../../images/close.png";
 import uniqid from "uniqid";
 import { CardInfo, CommentsInfo } from "../../../types";
-import singleton from "../../../../LocalStorageService";
 import { Comment } from "../";
 
 interface CardPopupProps extends CardInfo {
@@ -17,13 +16,15 @@ interface CardPopupProps extends CardInfo {
   close: Function;
   dropCard: () => void;
   commentsArr: CommentsInfo[];
+  column: string;
+  fixChangesOfCards: Function;
+  fixChangesOfComments: Function;
 }
 function CardPopup(props: CardPopupProps) {
   const card: CardInfo = {
     id: props.id,
     title: props.title,
     author: props.author,
-    column: props.column,
     comments: props.comments,
     description: props.description,
     commentsNum: props.commentsNum,
@@ -42,9 +43,9 @@ function CardPopup(props: CardPopupProps) {
   const [titleEdit, setTitleEdit] = useState<boolean>(false);
   const [descriptionEdit, setDescriptionEdit] = useState<boolean>(false);
 
-  useEffect(() => {
-    singleton.setComments([...stateComments], false);
-  }, [stateComments]);
+  // useEffect(() => {
+  //   props.fixChangesOfComments([...stateComments], false);
+  // }, [stateComments]);
 
   const acceptChangesTitle = (
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>
@@ -80,6 +81,7 @@ function CardPopup(props: CardPopupProps) {
       });
       setStateComments([...stateComments, comment]);
       setCommentContent("");
+      props.fixChangesOfComments([comment], false);
     }
   };
 
@@ -88,13 +90,13 @@ function CardPopup(props: CardPopupProps) {
       const arr = [...stateComments];
       props.changeCardInfo({
         ...card,
-        comments: [
-          ...arr.filter((comment) => comment.id !== id).map((comm) => comm.id),
-        ],
+        comments: arr
+          .filter((comment) => comment.id !== id)
+          .map((comm) => comm.id),
         commentsNum: card.commentsNum - 1,
       });
       setStateComments([...arr.filter((comm) => comm.id !== id)]);
-      singleton.setComments(
+      props.fixChangesOfComments(
         arr.filter((comment) => comment.id === id),
         true
       );
@@ -109,7 +111,7 @@ function CardPopup(props: CardPopupProps) {
         content: newContent,
       };
       setStateComments([...arr]);
-      singleton.setComments([...arr], false);
+      props.fixChangesOfComments([...arr], false);
     };
   const closeOutside = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     props.close();

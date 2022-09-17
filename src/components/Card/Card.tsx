@@ -7,12 +7,14 @@ import done from "../../images/done.png";
 import styled from "styled-components";
 import { CardInfo, CommentsInfo } from "../types";
 import { CardPopup } from "./Components";
-import singleton from "../../LocalStorageService";
 
 interface CardProps extends CardInfo {
   curentUser: string;
   dropCard: () => void;
   fullCommentsArr: CommentsInfo[];
+  column: string;
+  fixChangesOfCards: Function;
+  fixChangesOfComments: Function;
 }
 
 function Card(props: CardProps) {
@@ -28,14 +30,13 @@ function Card(props: CardProps) {
     id: props.id,
     title: props.title,
     author: props.author,
-    column: props.column,
     comments: props.comments,
     description: props.description,
     commentsNum: props.commentsNum,
   });
-  useEffect(() => {
-    setCardInfo({ ...cardInfo, column: props.column });
-  }, [props.column]);
+  // useEffect(() => {
+  //   setCardInfo({ ...cardInfo, column: props.column });
+  // }, [props.column]);
 
   useEffect(() => {
     if (!props.author) setCardInfo({ ...cardInfo, author: props.curentUser });
@@ -43,7 +44,7 @@ function Card(props: CardProps) {
 
   const chadgecard = (param: CardInfo) => {
     setCardInfo(param);
-    singleton.setCard([param], false);
+    props.fixChangesOfCards([param], false);
   };
 
   function editCard(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
@@ -57,7 +58,7 @@ function Card(props: CardProps) {
   function acceptNewTitle(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
     setCardInfo({ ...cardInfo, title: cardTitleState });
     setCardTitleIsEdit((cardTitleIsEdit) => !cardTitleIsEdit);
-    singleton.setCard([{ ...cardInfo, title: cardTitleState }], false);
+    props.fixChangesOfCards([{ ...cardInfo, title: cardTitleState }], false);
   }
   return (
     <CardConteaner>
@@ -92,7 +93,7 @@ function Card(props: CardProps) {
             id={cardInfo.id}
             title={cardInfo.title}
             author={cardInfo.author}
-            column={cardInfo.column}
+            column={props.column}
             comments={cardInfo.comments}
             description={cardInfo.description}
             commentsNum={cardInfo.commentsNum}
@@ -101,6 +102,8 @@ function Card(props: CardProps) {
             changeCardInfo={chadgecard}
             close={closePopup}
             dropCard={props.dropCard}
+            fixChangesOfCards={props.fixChangesOfCards}
+            fixChangesOfComments={props.fixChangesOfComments}
           />
         )}
       </CardWraper>

@@ -3,7 +3,6 @@ import uniqid from "uniqid";
 import done from "../../images/done.png";
 import { Card } from "../";
 import styled from "styled-components";
-import singleton from "../../LocalStorageService";
 import { Button, InputBlock, Input } from "../ui";
 import { CardInfo, ColumnData, CommentsInfo } from "../types";
 
@@ -15,6 +14,8 @@ interface ColumnProps {
   fullCardsArr: CardInfo[];
   fullCommentsArr: CommentsInfo[];
   index: number;
+  fixChangesOfCards: Function;
+  fixChangesOfComments: Function;
 }
 
 function Column({
@@ -25,6 +26,8 @@ function Column({
   cardsArr,
   fullCardsArr,
   fullCommentsArr,
+  fixChangesOfCards,
+  fixChangesOfComments,
 }: ColumnProps) {
   const [cards, setCards] = useState<CardInfo[]>(
     fullCardsArr.filter((card) => cardsArr.indexOf(card.id) !== -1)
@@ -36,18 +39,15 @@ function Column({
 
   useEffect(() => {
     const cardArr = cards.map<CardInfo>((element) => {
-      element.column = titleState;
-      console.log(titleState);
       return { ...element };
     });
     setCards([...cardArr]);
-    singleton.setCard(cardArr, false);
+    fixChangesOfCards(cardArr, false);
 
     const column: ColumnData = {
       columnName: titleState,
       cards: cards.map((card) => card.id),
     };
-    singleton.setColumn(column, index);
     change(column);
   }, [titleState]);
 
@@ -56,9 +56,7 @@ function Column({
       columnName: titleState,
       cards: cards.map((card) => card.id),
     };
-    singleton.setCard(cards, false);
-    //fixChandesCards([...singleton.getCards()]);
-    singleton.setColumn(column, index);
+    fixChangesOfCards(cards, false);
     change(column);
   }, [cards]);
 
@@ -71,8 +69,10 @@ function Column({
         cards: cards.map((card) => card.id),
       };
       setCards([...arr]);
-      console.log(cards);
-      singleton.setCard([...cards.filter((card) => card.id === id)], true);
+      fixChangesOfCards(
+        cards.filter((card) => card.id === id),
+        true
+      );
     };
   };
 
@@ -82,7 +82,6 @@ function Column({
         id: uniqid(),
         title: value,
         author: undefined,
-        column: titleState,
         comments: [],
         description: "",
         commentsNum: 0,
@@ -93,7 +92,7 @@ function Column({
         columnName: titleState,
         cards: cards.map((card) => card.id),
       };
-      singleton.setCard([card], false);
+      fixChangesOfCards([card], false);
       setCardIsAdd((cardIsAdd) => !cardIsAdd);
     }
   };
@@ -134,13 +133,15 @@ function Column({
             key={item.id}
             author={item.author}
             title={item.title}
-            column={item.column}
+            column={titleState}
             comments={item.comments}
             description={item.description}
             commentsNum={item.commentsNum}
             dropCard={dropCard(item.id)}
             curentUser={curentUser}
             fullCommentsArr={fullCommentsArr}
+            fixChangesOfCards={fixChangesOfCards}
+            fixChangesOfComments={fixChangesOfComments}
           />
         ))}
       </WrapeCards>
