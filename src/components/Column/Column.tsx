@@ -174,11 +174,13 @@ function Column({
 const WraperColumn = styled.div`
   width: 272px;
   background-color: #ffffff;
+  height:min-content;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   padding: 20px 20px;
   padding-bottom: 10px;
+  border-radius:10px;
 `;
 const WrapeCards = styled.div`
   display: flex;

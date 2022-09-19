@@ -83,11 +83,7 @@ function Card(props: CardProps) {
             <p>{cardInfo.title}</p>
           </CardTextBlock>
         )}
-        {!cardTitleIsEdit && (
-          <div>
-            <Button image={pencil} event={editCard}></Button>
-          </div>
-        )}
+        {!cardTitleIsEdit && <Button image={pencil} event={editCard}></Button>}
         {popupVisible && (
           <CardPopup
             id={cardInfo.id}

@@ -277,6 +277,7 @@ const DeleteBtn = styled.button`
   height: 25px;
   background: #ff0000;
   color: #ffffff;
+  cursor:pointer;
 `;
 const CommentsBlock = styled.div`
   width: 70%;

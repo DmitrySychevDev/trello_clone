@@ -14,9 +14,8 @@ function Button({ image, event }: Props) {
 }
 const UiButton = styled.button`
   border: none;
-  background-color: #ffffff;
-  z-index: 20;
   cursor: pointer;
+  background-color: transparent;
   img {
     width: 20px;
     height: 20px;
