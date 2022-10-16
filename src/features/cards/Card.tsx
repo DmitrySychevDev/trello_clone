@@ -1,51 +1,28 @@
-import React, { useState, useEffect } from "react";
-import pencil from "../../images/draw.png";
-import description from "../../images/description.png";
-import comment from "../../images/comment.png";
-import { Button, InputBlock, Input } from "../ui";
-import done from "../../images/done.png";
+import React, { useState } from "react";
+import { pencil, commentImg, descriptionImg } from "../../images";
+import { Button, InputBlock, Input } from "../../components/ui";
+import { done } from "../../images";
 import styled from "styled-components";
-import { CardInfo, CommentsInfo } from "../types";
-import { CardPopup } from "./Components";
+import { CardInfo } from "../../types";
+import { CardPopup } from "./";
+import { updateCard } from "./cardsSlice";
+import { useAppSelector, useAppDispatch } from "../../App/hooks";
 
-interface CardProps extends CardInfo {
+interface CardProps {
   curentUser: string;
+  id: string;
   dropCard: () => void;
-  fullCommentsArr: CommentsInfo[];
   column: string;
-  fixChangesOfCards: Function;
-  fixChangesOfComments: Function;
 }
 
 function Card(props: CardProps) {
+  const card = useAppSelector(
+    (state) => state.cards.find((card) => card.id === props.id) as CardInfo
+  );
+  const dispath = useAppDispatch();
   const [popupVisible, setPopupVisible] = useState<boolean>(false);
   const [cardTitleIsEdit, setCardTitleIsEdit] = useState<boolean>(false);
-  const [cardTitleState, setCardTitleState] = useState<string>(props.title);
-  const [commentsState, setCommentsState] = useState<CommentsInfo[]>(
-    props.fullCommentsArr.filter(
-      (comment) => props.comments.indexOf(comment.id) !== -1
-    )
-  );
-  const [cardInfo, setCardInfo] = useState<CardInfo>({
-    id: props.id,
-    title: props.title,
-    author: props.author,
-    comments: props.comments,
-    description: props.description,
-    commentsNum: props.commentsNum,
-  });
-  // useEffect(() => {
-  //   setCardInfo({ ...cardInfo, column: props.column });
-  // }, [props.column]);
-
-  useEffect(() => {
-    if (!props.author) setCardInfo({ ...cardInfo, author: props.curentUser });
-  }, [props.curentUser]);
-
-  const chadgecard = (param: CardInfo) => {
-    setCardInfo(param);
-    props.fixChangesOfCards([param], false);
-  };
+  const [cardTitleState, setCardTitleState] = useState<string>(card.title);
 
   function editCard(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
     setPopupVisible(true);
@@ -56,9 +33,8 @@ function Card(props: CardProps) {
   }
 
   function acceptNewTitle(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
-    setCardInfo({ ...cardInfo, title: cardTitleState });
     setCardTitleIsEdit((cardTitleIsEdit) => !cardTitleIsEdit);
-    props.fixChangesOfCards([{ ...cardInfo, title: cardTitleState }], false);
+    dispath(updateCard({ ...card, title: cardTitleState }));
   }
   return (
     <CardConteaner>
@@ -80,38 +56,29 @@ function Card(props: CardProps) {
               setCardTitleIsEdit((cardTitleIsEdit) => !cardTitleIsEdit);
             }}
           >
-            <p>{cardInfo.title}</p>
+            <p>{card.title}</p>
           </CardTextBlock>
         )}
         {!cardTitleIsEdit && <Button image={pencil} event={editCard}></Button>}
         {popupVisible && (
           <CardPopup
-            id={cardInfo.id}
-            title={cardInfo.title}
-            author={cardInfo.author}
+            cardId={card.id}
             column={props.column}
-            comments={cardInfo.comments}
-            description={cardInfo.description}
-            commentsNum={cardInfo.commentsNum}
             curentUser={props.curentUser}
-            commentsArr={props.fullCommentsArr}
-            changeCardInfo={chadgecard}
             close={closePopup}
             dropCard={props.dropCard}
-            fixChangesOfCards={props.fixChangesOfCards}
-            fixChangesOfComments={props.fixChangesOfComments}
           />
         )}
       </CardWraper>
       <IconsBlock>
-        {!!cardInfo.description.length && (
+        {!!card.description.length && (
           <Icon>
-            <img src={description} />
+            <img alt="description" src={descriptionImg} />
           </Icon>
         )}
-        {!!cardInfo.commentsNum && (
+        {!!card.commentsNum && (
           <CommentIcon>
-            <img src={comment} /> <p>{cardInfo.commentsNum}</p>
+            <img alt="comment" src={commentImg} /> <p>{card?.commentsNum}</p>
           </CommentIcon>
         )}
       </IconsBlock>

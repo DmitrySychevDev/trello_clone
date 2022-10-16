@@ -1,98 +1,67 @@
 import React, { useState, useEffect } from "react";
-import uniqid from "uniqid";
-import done from "../../images/done.png";
-import { Card } from "../";
+import { nanoid } from "@reduxjs/toolkit";
+import { done } from "../../images";
+import { Card } from "../cards";
 import styled from "styled-components";
-import { Button, InputBlock, Input } from "../ui";
-import { CardInfo, ColumnData, CommentsInfo } from "../types";
+import { Button, InputBlock, Input } from "../../components/ui";
+import { CardInfo, ColumnData } from "../../types";
+import { useAppSelector, useAppDispatch } from "../../App/hooks";
+import { addCard, deleteCard } from "../cards/cardsSlice";
+import {
+  attachCardToColumn,
+  updateColumn,
+  unattachCardOfColumn,
+} from "./columnsSlice";
 
 interface ColumnProps {
+  curentId: string;
   title: string;
   curentUser: string;
-  change: Function;
-  cardsArr: string[];
-  fullCardsArr: CardInfo[];
-  fullCommentsArr: CommentsInfo[];
-  index: number;
-  fixChangesOfCards: Function;
-  fixChangesOfComments: Function;
 }
 
-function Column({
-  title,
-  curentUser,
-  index,
-  change,
-  cardsArr,
-  fullCardsArr,
-  fullCommentsArr,
-  fixChangesOfCards,
-  fixChangesOfComments,
-}: ColumnProps) {
-  const [cards, setCards] = useState<CardInfo[]>(
-    fullCardsArr.filter((card) => cardsArr.indexOf(card.id) !== -1)
+export function Column({ curentId, title, curentUser }: ColumnProps) {
+  const cardsArrOnColumn = useAppSelector(
+    (state) => state.columns.find((column) => column.id === curentId)?.cards
+  );
+  const cards = useAppSelector((state) =>
+    state.cards.filter((card) => cardsArrOnColumn?.indexOf(card.id) !== -1)
   );
   const [value, setValue] = useState<string>("");
   const [titleState, setTitleState] = useState<string>(title);
   const [cardIsAdd, setCardIsAdd] = useState<boolean>(false);
   const [columnIsEdit, setColumnIsEdit] = useState<boolean>(false);
 
-  useEffect(() => {
-    const cardArr = cards.map<CardInfo>((element) => {
-      return { ...element };
-    });
-    setCards([...cardArr]);
-    fixChangesOfCards(cardArr, false);
+  const dispath = useAppDispatch();
 
+  useEffect(() => {
     const column: ColumnData = {
+      id: curentId,
       columnName: titleState,
       cards: cards.map((card) => card.id),
     };
-    change(column);
+    dispath(updateColumn(column));
   }, [titleState]);
-
-  useEffect(() => {
-    const column: ColumnData = {
-      columnName: titleState,
-      cards: cards.map((card) => card.id),
-    };
-    fixChangesOfCards(cards, false);
-    change(column);
-  }, [cards]);
 
   const dropCard = (id: string) => {
     return () => {
-      let arr: CardInfo[] = [...cards];
-      arr = [...arr.filter((card) => card.id !== id)];
-      const column: ColumnData = {
-        columnName: titleState,
-        cards: cards.map((card) => card.id),
-      };
-      setCards([...arr]);
-      fixChangesOfCards(
-        cards.filter((card) => card.id === id),
-        true
-      );
+      dispath(deleteCard(id));
+      dispath(unattachCardOfColumn({ columnId: curentId, cardId: id }));
     };
   };
 
   const acceptCard = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     if (value !== "") {
       const card: CardInfo = {
-        id: uniqid(),
+        id: nanoid(),
         title: value,
-        author: undefined,
+        author: curentUser,
         comments: [],
         description: "",
         commentsNum: 0,
       };
       setValue("");
-      setCards([...cards, card]);
-      const column: ColumnData = {
-        columnName: titleState,
-        cards: cards.map((card) => card.id),
-      };
-      fixChangesOfCards([card], false);
+      dispath(addCard(card));
+      dispath(attachCardToColumn({ columnId: curentId, cardId: card.id }));
       setCardIsAdd((cardIsAdd) => !cardIsAdd);
     }
   };
@@ -131,17 +100,9 @@ function Column({
           <Card
             id={item.id}
             key={item.id}
-            author={item.author}
-            title={item.title}
             column={titleState}
-            comments={item.comments}
-            description={item.description}
-            commentsNum={item.commentsNum}
             dropCard={dropCard(item.id)}
             curentUser={curentUser}
-            fullCommentsArr={fullCommentsArr}
-            fixChangesOfCards={fixChangesOfCards}
-            fixChangesOfComments={fixChangesOfComments}
           />
         ))}
       </WrapeCards>
@@ -174,13 +135,13 @@ function Column({
 const WraperColumn = styled.div`
   width: 272px;
   background-color: #ffffff;
-  height:min-content;
+  height: min-content;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   padding: 20px 20px;
   padding-bottom: 10px;
-  border-radius:10px;
+  border-radius: 10px;
 `;
 const WrapeCards = styled.div`
   display: flex;

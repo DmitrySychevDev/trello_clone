@@ -1,7 +1,7 @@
 interface CardInfo {
   id: string;
   title: string;
-  author: string | undefined;
+  author: string;
   comments: string[];
   description: string;
   commentsNum: number;
@@ -12,6 +12,7 @@ interface CommentsInfo {
   content: string;
 }
 interface ColumnData {
+  id: string;
   columnName: string;
   cards: string[];
 }

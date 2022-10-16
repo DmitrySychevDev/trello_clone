@@ -1,33 +1,28 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
-import done from "../../../../images/done.png";
-import { CommentsInfo } from "../../../types";
-import { InputBlock, Button, Input } from "../../../ui";
+import { done } from "../../images";
+import { CommentsInfo } from "../../types";
+import { InputBlock, Button, Input } from "../../components/ui";
+import { useAppSelector, useAppDispatch } from "../../App/hooks";
+import { updateComment } from "./commentsSlice";
 
-interface CommentProps extends CommentsInfo {
-  curentUser: string;
-  editComment: Function;
+interface CommentProps {
+  currentId: string;
   deleteComment: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
-  index: number;
 }
 
-function Comment({
-  author,
-  content,
-  editComment,
-  deleteComment,
-  curentUser,
-  index,
-}: CommentProps) {
-  const [value, setValue] = useState<string>(content);
+function Comment({ currentId, deleteComment }: CommentProps) {
+  const comment = useAppSelector(
+    (state) =>
+      state.comments.find((comment) => comment.id === currentId) as CommentsInfo
+  );
+  const dispath = useAppDispatch();
+  const [value, setValue] = useState<string>(comment.content);
   const [commentEdit, setCommentEdit] = useState<boolean>(false);
-  useEffect(() => {
-    if (!author) editComment(content, curentUser);
-  }, [curentUser]);
 
   const edit = () => {
     if (value !== "") {
-      editComment(value, author);
+      dispath(updateComment({ ...comment, content: value }));
     }
     setCommentEdit((commentEdit) => !commentEdit);
   };
@@ -38,10 +33,8 @@ function Comment({
     <div>
       <CommentWraper>
         <div>
-          <h4>{author}</h4>
-          {!commentEdit && (
-            <p className={`comment-content_${index}`}>{content}</p>
-          )}
+          <h4>{comment.author}</h4>
+          {!commentEdit && <p>{comment.content}</p>}
         </div>
 
         {commentEdit && (

@@ -7,9 +7,6 @@ const GlobalStyle = createGlobalStyle`
   }
   body {
     background-color: #21759b;
-    button{
-      
-    }
   }
   `;
 export default GlobalStyle;

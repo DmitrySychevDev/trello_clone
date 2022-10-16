@@ -8,7 +8,7 @@ interface Props {
 function Button({ image, event }: Props) {
   return (
     <UiButton onClick={event}>
-      <img src={image} />
+      <img alt="icon" src={image} />
     </UiButton>
   );
 }

@@ -1,4 +1,5 @@
-import { CommentsInfo, CardInfo, ColumnData } from "./components/types";
+import { CommentsInfo, CardInfo, ColumnData } from "../types";
+import { nanoid } from "@reduxjs/toolkit";
 enum StorageKeys {
   Comments = "comments",
   Columns = "columns",
@@ -13,10 +14,10 @@ class LocalStorageService {
     this.columns = columnsLocal
       ? JSON.parse(columnsLocal)
       : [
-          { columnName: "TODO", cards: [] },
-          { columnName: "In Progress", cards: [] },
-          { columnName: "Testing", cards: [] },
-          { columnName: "Done", cards: [] },
+          { id: nanoid(), columnName: "TODO", cards: [] },
+          { id: nanoid(), columnName: "In Progress", cards: [] },
+          { id: nanoid(), columnName: "Testing", cards: [] },
+          { id: nanoid(), columnName: "Done", cards: [] },
         ];
     const cardsLocal = localStorage.getItem(StorageKeys.Cards);
     this.cards = cardsLocal ? JSON.parse(cardsLocal) : [];
